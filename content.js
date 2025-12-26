@@ -1,16 +1,10 @@
 chrome.storage.local.get({ catModeEnabled: true }, (result) => {
   if (result.catModeEnabled) {
     const script = document.createElement('script');
-    script.textContent = `
-      (function() {
-        const checkBlockly = setInterval(() => {
-          if (window.Blockly && window.Blockly.setCatMode) {
-            window.Blockly.setCatMode(true);
-            clearInterval(checkBlockly);
-          }
-        }, 500);
-      })();
-    `;
-    document.documentElement.appendChild(script);
+    script.src = chrome.runtime.getURL('inject.js');
+    script.onload = function() {
+        this.remove(); // Премахваме тага след зареждане, за да е чисто
+    };
+    (document.head || document.documentElement).appendChild(script);
   }
 });
